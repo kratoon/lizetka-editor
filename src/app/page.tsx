@@ -1,103 +1,120 @@
-import Image from "next/image";
+'use client';
+
+import { JSX, useEffect, useState } from 'react';
+import AddCircle from '@mui/icons-material/AddCircle';
+import Cancel from '@mui/icons-material/Cancel';
+import Download from '@mui/icons-material/Download';
+import BlogPostElement from '@/components/BlogPostElement';
+import TextInput from '@/components/TextInput';
+import { ContentItem, Meta } from '@/app/BlogPost';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    const [elements, setElements] = useState<JSX.Element[]>([]);
+    const [meta, setMeta] = useState<Meta>({ date: formatDate(new Date()), title: `Blata ${new Date().getFullYear()}` });
+    const [contentByKey, setContentByKey] = useState<Record<string, ContentItem | null>>({});
+    const [config, setConfig] = useState<string>();
+    const onAddClick = (key: string | null) => {
+        setElements((prev) => {
+            const newElement = (
+                <BlogPostElement
+                    key={crypto.randomUUID()}
+                    onChangeAction={(contentItem) => {
+                        setContentByKey((items) => ({ ...items, [newElement.key!]: contentItem }));
+                    }}
+                />
+            );
+            const array = [...prev];
+            if (!key) {
+                array.push(newElement);
+            } else {
+                const index = array.findIndex((item) => item.key === key);
+                if (index !== -1) {
+                    array.splice(index + 1, 0, newElement);
+                } else {
+                    array.push(newElement);
+                }
+            }
+            return array;
+        });
+    };
+    const onClearClick = (key: string) => {
+        setElements((prev) => {
+            setContentByKey((items) => {
+                const result = { ...items };
+                if (result.hasOwnProperty(key)) {
+                    delete result[key];
+                }
+                return result;
+            });
+            return prev.filter((it) => it.key !== key);
+        });
+    };
+    const onDownloadClick = () => {
+        console.log(config);
+    };
+    useEffect(() => {
+        setConfig(
+            JSON.stringify(
+                {
+                    meta,
+                    content: elements.map((it) => (it.key ? contentByKey[it.key] : null)).filter((it) => it != null)
+                },
+                null,
+                4
+            )
+        );
+    }, [meta, elements, contentByKey]);
+    return (
+        <div className="flex">
+            <div className="w-1/2 p-4 bg-red">
+                <div className="flex flex-col border-b border-gray-300 pt-4 pb-4">
+                    <div className="w-md">
+                        <TextInput
+                            label="Titulek (součástí URL, vynech diakritiku)"
+                            defaultValue={meta.title}
+                            maxLength={64}
+                            onChangeAction={(value) => setMeta((prev) => ({ ...prev, title: value }))}
+                        ></TextInput>
+                    </div>
+                    <div className="w-md pt-4">
+                        <TextInput
+                            label="Datum článku (YYYY-MM-DD)"
+                            defaultValue={meta.date}
+                            maxLength={10}
+                            onChangeAction={(value) => setMeta((prev) => ({ ...prev, date: value }))}
+                        ></TextInput>
+                    </div>
+                </div>
+                {elements.map((it) => (
+                    <div key={it.key} className="flex border-b border-gray-300 pt-4 pb-4">
+                        <a onClick={() => onClearClick(it.key!)} className="mt-1 mr-1 cursor-pointer text-red-600" title="Odebrat">
+                            <Cancel />
+                        </a>
+                        <a onClick={() => onAddClick(it.key)} className="mt-1 mr-1 cursor-pointer text-green-900" title="Přidat">
+                            <AddCircle />
+                        </a>
+                        <div>{it}</div>
+                    </div>
+                ))}
+                <div className="flex w-full justify-end pt-10">
+                    <a onClick={() => onAddClick(null)} className="cursor-pointer text-green-900 mr-8" title="Přidat">
+                        <AddCircle style={{ transform: 'scale(1.5)' }} />
+                    </a>
+                    <a onClick={onDownloadClick} className="cursor-pointer mr-8" title="Stáhnout článek">
+                        <Download style={{ transform: 'scale(1.5)' }} />
+                    </a>
+                </div>
+            </div>
+            <div className="w-1/2 p-4 bg-gray-100">
+                <code className="whitespace-pre-wrap p-1 font-mono">{config}</code>
+            </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
+}
+
+function formatDate(date: Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
