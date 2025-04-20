@@ -66,7 +66,7 @@ export default function Home() {
     }, [meta, elements, contentByKey]);
     return (
         <div className="flex">
-            <div className="w-1/2 p-4 bg-red">
+            <div className="w-1/2 p-4 overflow-y-scroll" style={{ height: '100vh' }}>
                 <div className="flex flex-col border-b border-gray-300 pt-4 pb-4">
                     <div className="w-md">
                         <TextInput
@@ -97,15 +97,16 @@ export default function Home() {
                     </div>
                 ))}
                 <div className="flex w-full justify-end pt-10">
-                    <a onClick={() => onAddClick(null)} className="cursor-pointer text-green-900 mr-8" title="Přidat">
+                    <a onClick={() => onAddClick(null)} className="cursor-pointer p-2 text-green-900 mr-8" title="Přidat">
                         <AddCircle style={{ transform: 'scale(1.5)' }} />
                     </a>
-                    <a onClick={onDownloadClick} className="cursor-pointer mr-8" title="Stáhnout článek">
-                        <Download style={{ transform: 'scale(1.5)' }} />
+                    <a onClick={onDownloadClick} className="cursor-pointer p-2 mr-8 border rounded-md bg-gray-100" title="Stáhnout článek">
+                        <Download className="mr-2" style={{ transform: 'scale(1.5)' }} />
+                        stáhnout
                     </a>
                 </div>
             </div>
-            <div className="w-1/2 p-4 bg-gray-100">
+            <div className="w-1/2 p-4 bg-gray-100 overflow-y-scroll" style={{ height: '100vh' }}>
                 <code className="whitespace-pre-wrap p-1 font-mono">{config}</code>
             </div>
         </div>
