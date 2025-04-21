@@ -8,6 +8,7 @@ import BlogPostElement from '@/components/BlogPostElement';
 import TextInput from '@/components/TextInput';
 import { BlogPost, cleanBlogPost, ContentItem } from '@/app/BlogPost';
 import BlogPostPreview from '@/components/BlogPostPreview';
+import { downloadFile } from '@/utils/fileDownload';
 
 export default function Home() {
     const [blogPost, setBlogPost] = useState<BlogPost>({
@@ -39,7 +40,7 @@ export default function Home() {
         });
     };
     const onDownloadClick = () => {
-        console.log(cleanBlogPost(blogPost));
+        downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.date}.json`);
     };
     return (
         <div className="flex">
