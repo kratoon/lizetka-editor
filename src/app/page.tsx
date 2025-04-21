@@ -1,103 +1,122 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import AddCircle from '@mui/icons-material/AddCircle';
+import Cancel from '@mui/icons-material/Cancel';
+import Download from '@mui/icons-material/Download';
+import BlogPostElement from '@/components/BlogPostElement';
+import TextInput from '@/components/TextInput';
+import { BlogPost, cleanBlogPost, ContentItem } from '@/app/BlogPost';
+import BlogPostPreview from '@/components/BlogPostPreview';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    const [blogPost, setBlogPost] = useState<BlogPost>({
+        meta: { date: formatDate(new Date()), title: `Blata ${new Date().getFullYear()}` },
+        content: []
+    });
+    const onAddClick = (id: string | null) => {
+        setBlogPost((prevPost) => {
+            const content = [...prevPost.content];
+            const newItem: Partial<ContentItem> = { id: crypto.randomUUID(), type: 'paragraph' };
+            if (id == null) {
+                content.push(newItem);
+            } else {
+                const index = content.findIndex((it) => it.id === id)! + 1;
+                content.splice(index, 0, newItem);
+            }
+            return {
+                meta: prevPost.meta,
+                content
+            };
+        });
+    };
+    const onClearClick = (id: string) => {
+        setBlogPost((prevPost) => {
+            return {
+                meta: prevPost.meta,
+                content: prevPost.content.filter((it) => it.id !== id)
+            };
+        });
+    };
+    const onDownloadClick = () => {
+        console.log(cleanBlogPost(blogPost));
+    };
+    return (
+        <div className="flex">
+            <div className="w-1/2 p-4 overflow-y-scroll" style={{ height: '100vh' }}>
+                <div className="flex flex-col border-b border-gray-300 pt-4 pb-4">
+                    <div className="w-md">
+                        <TextInput
+                            label="Titulek (součástí URL, vynech diakritiku)"
+                            defaultValue={blogPost.meta.title}
+                            maxLength={64}
+                            onChangeAction={(value) =>
+                                setBlogPost((prev) => {
+                                    const newValue: BlogPost = { ...prev };
+                                    newValue.meta.title = value;
+                                    return newValue;
+                                })
+                            }
+                        ></TextInput>
+                    </div>
+                    <div className="w-md pt-4">
+                        <TextInput
+                            label="Datum článku (YYYY-MM-DD)"
+                            defaultValue={blogPost.meta.date}
+                            maxLength={10}
+                            onChangeAction={(value) =>
+                                setBlogPost((prev) => {
+                                    const newValue: BlogPost = { ...prev };
+                                    newValue.meta.date = value;
+                                    return newValue;
+                                })
+                            }
+                        ></TextInput>
+                    </div>
+                </div>
+                {blogPost.content.map((item) => (
+                    <div key={item.id} className="flex border-b border-gray-300 pt-4 pb-4">
+                        <a onClick={() => onClearClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-red-600" title="Odebrat">
+                            <Cancel />
+                        </a>
+                        <a onClick={() => onAddClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-green-900" title="Přidat">
+                            <AddCircle />
+                        </a>
+                        <div>
+                            <BlogPostElement
+                                item={item}
+                                onChangeAction={(newItem) => {
+                                    setBlogPost((prevPost) => {
+                                        return {
+                                            meta: prevPost.meta,
+                                            content: prevPost.content.map((it) => (it.id === item.id ? newItem : it))
+                                        };
+                                    });
+                                }}
+                            />
+                        </div>
+                    </div>
+                ))}
+                <div className="flex w-full justify-end pt-10">
+                    <a onClick={() => onAddClick(null)} className="cursor-pointer p-2 text-green-900 mr-8" title="Přidat">
+                        <AddCircle style={{ transform: 'scale(1.5)' }} />
+                    </a>
+                    <a onClick={onDownloadClick} className="cursor-pointer p-2 mr-8 border rounded-md bg-gray-100" title="Stáhnout článek">
+                        <Download className="mr-2" style={{ transform: 'scale(1.5)' }} />
+                        stáhnout
+                    </a>
+                </div>
+            </div>
+            <div className="w-1/2 pl-4 pr-4 pb-4 bg-gray-100 overflow-y-scroll" style={{ height: '100vh' }}>
+                <BlogPostPreview blogPost={blogPost}></BlogPostPreview>
+            </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
+}
+
+function formatDate(date: Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
