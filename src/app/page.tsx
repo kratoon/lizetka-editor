@@ -76,7 +76,6 @@ export default function Home() {
                 </div>
                 {blogPost.content.map((item) => (
                     <div key={item.id} className="flex border-b border-gray-300 pt-4 pb-4">
-                        {item.id}
                         <a onClick={() => onClearClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-red-600" title="Odebrat">
                             <Cancel />
                         </a>
