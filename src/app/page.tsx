@@ -3,18 +3,16 @@
 import { useState } from 'react';
 import AddCircle from '@mui/icons-material/AddCircle';
 import Cancel from '@mui/icons-material/Cancel';
-import Download from '@mui/icons-material/Download';
 import BlogPostElement from '@/components/BlogPostElement';
 import TextInput from '@/components/TextInput';
 import { BlogPost, cleanBlogPost, ContentItem } from '@/app/BlogPost';
 import BlogPostPreview from '@/components/BlogPostPreview';
 import { downloadFile } from '@/utils/fileDownload';
+import ButtonDownload from '@/components/ButtonDownload';
+import { createDefaultBlogPost } from '@/utils/defaultBlogPost';
 
 export default function Home() {
-    const [blogPost, setBlogPost] = useState<BlogPost>({
-        meta: { date: formatDate(new Date()), title: `Blata ${new Date().getFullYear()}` },
-        content: []
-    });
+    const [blogPost, setBlogPost] = useState<BlogPost>(createDefaultBlogPost());
     const onAddClick = (id: string | null) => {
         setBlogPost((prevPost) => {
             const content = [...prevPost.content];
@@ -40,11 +38,24 @@ export default function Home() {
         });
     };
     const onDownloadClick = () => {
-        downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.date}.json`);
+        const isValidDate = blogPost.meta.date != null && blogPost.meta.date !== '' && /^\d{4}-\d{2}-\d{2}$/.test(blogPost.meta.date);
+        const isValidTitle = blogPost.meta.title != null && blogPost.meta.title !== '' && /^[a-zA-Z0-9 ]*$/.test(blogPost.meta.title);
+        if (!isValidTitle) {
+            alert('Titulek není validní');
+        } else if (!isValidDate) {
+            alert('Datum článku není validní');
+        } else {
+            downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.title.toLowerCase().replace(/\s/, '-')}.json`);
+        }
     };
     return (
         <div className="flex">
             <div className="w-1/2 p-4 overflow-y-scroll" style={{ height: '100vh' }}>
+                <div className="flex w-full justify-end items-center">
+                    <span className="mr-2">
+                        <ButtonDownload onClick={onDownloadClick} />
+                    </span>
+                </div>
                 <div className="flex flex-col border-b border-gray-300 pt-4 pb-4">
                     <div className="w-md">
                         <TextInput
@@ -77,10 +88,18 @@ export default function Home() {
                 </div>
                 {blogPost.content.map((item) => (
                     <div key={item.id} className="flex border-b border-gray-300 pt-4 pb-4">
-                        <a onClick={() => onClearClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-red-600" title="Odebrat">
+                        <a
+                            onClick={() => onClearClick(item.id!)}
+                            className="mt-1 mr-1 cursor-pointer hover:text-red-600 text-red-500"
+                            title="Odebrat"
+                        >
                             <Cancel />
                         </a>
-                        <a onClick={() => onAddClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-green-900" title="Přidat">
+                        <a
+                            onClick={() => onAddClick(item.id!)}
+                            className="mt-1 mr-1 cursor-pointer hover:text-green-900 text-green-800"
+                            title="Přidat"
+                        >
                             <AddCircle />
                         </a>
                         <div>
@@ -98,14 +117,13 @@ export default function Home() {
                         </div>
                     </div>
                 ))}
-                <div className="flex w-full justify-end pt-10">
-                    <a onClick={() => onAddClick(null)} className="cursor-pointer p-2 text-green-900 mr-8" title="Přidat">
+                <div className="flex w-full justify-end pt-10 items-center">
+                    <a onClick={() => onAddClick(null)} className="cursor-pointer hover:text-green-900 text-green-800 mr-8" title="Přidat">
                         <AddCircle style={{ transform: 'scale(1.5)' }} />
                     </a>
-                    <a onClick={onDownloadClick} className="cursor-pointer p-2 mr-8 border rounded-md bg-gray-100" title="Stáhnout článek">
-                        <Download className="mr-2" style={{ transform: 'scale(1.5)' }} />
-                        stáhnout
-                    </a>
+                    <span className="mr-2">
+                        <ButtonDownload onClick={onDownloadClick} />
+                    </span>
                 </div>
             </div>
             <div className="w-1/2 pl-4 pr-4 pb-4 bg-gray-100 overflow-y-scroll" style={{ height: '100vh' }}>
@@ -113,11 +131,4 @@ export default function Home() {
             </div>
         </div>
     );
-}
-
-function formatDate(date: Date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
 }

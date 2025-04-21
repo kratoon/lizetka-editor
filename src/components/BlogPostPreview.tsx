@@ -35,12 +35,13 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
             {cleanBlogPost(blogPost, true).content.map((it) => {
                 return (
                     <div key={it.id} className="w-full">
-                        {it.type === 'h1' ? <h1 className="text-4xl font-bold">{it.content as string}</h1> : null}
-                        {it.type === 'h2' ? <h2 className="text-3xl font-semibold">{it.content as string}</h2> : null}
-                        {it.type === 'h3' ? <h3 className="text-2xl font-medium">{it.content as string}</h3> : null}
-                        {it.type === 'h4' ? <h4 className="text-xl font-medium">{it.content as string}</h4> : null}
+                        {it.type === 'h1' ? <h1 className="text-4xl mb-5 font-bold">{it.content as string}</h1> : null}
+                        {it.type === 'h2' ? <h2 className="text-3xl mb-5 font-semibold">{it.content as string}</h2> : null}
+                        {it.type === 'h3' ? <h3 className="text-2xl mb-5 font-medium">{it.content as string}</h3> : null}
+                        {it.type === 'h4' ? <h4 className="text-xl mb-5 font-medium">{it.content as string}</h4> : null}
                         {it.type === 'paragraph' ? <p className="mb-5">{it.content as string}</p> : null}
                         {it.type === 'comment' ? <EndOfExcerpt /> : null}
+                        {it.type === 'image' ? <ImagePreview image={it.content as string}></ImagePreview> : null}
                     </div>
                 );
             })}
@@ -48,9 +49,13 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
     );
 }
 
+function ImagePreview({ image }: { image: string }) {
+    return <img src={image} alt="image" />;
+}
+
 function EndOfExcerpt() {
     return (
-        <div className="relative mb-5">
+        <div className="relative mb-5 mt-10 mb-10">
             <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
             </div>

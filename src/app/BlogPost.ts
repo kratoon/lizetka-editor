@@ -55,10 +55,11 @@ export function cleanBlogPost(blogPost: BlogPost, preserveIds: boolean = false) 
 }
 
 export function isValidContentItem(item: Partial<ContentItem>): item is ContentItem {
-    if (item == null || item.type == null) {
+    const contentIsNonBlankString = item.content != null && typeof item.content === 'string' && item.content != '';
+    if (item?.type == null) {
         return false;
-    } else if (['h1', 'h2', 'h3', 'paragraph', 'comment'].includes(item.type)) {
-        return item.content != null && item.content != '';
+    } else if (['h1', 'h2', 'h3', 'paragraph', 'comment', 'image'].includes(item.type)) {
+        return contentIsNonBlankString;
     }
-    return true;
+    return false;
 }
