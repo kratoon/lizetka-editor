@@ -107,10 +107,8 @@ export default function Home() {
                     </a>
                 </div>
             </div>
-            <div className="w-1/2 p-4 bg-gray-100 overflow-y-scroll" style={{ height: '100vh' }}>
-                <code className="whitespace-pre-wrap p-1 font-mono">
-                    <BlogPostPreview blogPost={blogPost}></BlogPostPreview>
-                </code>
+            <div className="w-1/2 pl-4 pr-4 pb-4 bg-gray-100 overflow-y-scroll" style={{ height: '100vh' }}>
+                <BlogPostPreview blogPost={blogPost}></BlogPostPreview>
             </div>
         </div>
     );
