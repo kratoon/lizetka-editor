@@ -1,69 +1,46 @@
 'use client';
 
-import { JSX, useEffect, useState } from 'react';
+import { useState } from 'react';
 import AddCircle from '@mui/icons-material/AddCircle';
 import Cancel from '@mui/icons-material/Cancel';
 import Download from '@mui/icons-material/Download';
 import BlogPostElement from '@/components/BlogPostElement';
 import TextInput from '@/components/TextInput';
-import { ContentItem, Meta } from '@/app/BlogPost';
+import { BlogPost, cleanBlogPost, ContentItem } from '@/app/BlogPost';
+import BlogPostPreview from '@/components/BlogPostPreview';
 
 export default function Home() {
-    const [elements, setElements] = useState<JSX.Element[]>([]);
-    const [meta, setMeta] = useState<Meta>({ date: formatDate(new Date()), title: `Blata ${new Date().getFullYear()}` });
-    const [contentByKey, setContentByKey] = useState<Record<string, ContentItem | null>>({});
-    const [config, setConfig] = useState<string>();
-    const onAddClick = (key: string | null) => {
-        setElements((prev) => {
-            const newElement = (
-                <BlogPostElement
-                    key={crypto.randomUUID()}
-                    onChangeAction={(contentItem) => {
-                        setContentByKey((items) => ({ ...items, [newElement.key!]: contentItem }));
-                    }}
-                />
-            );
-            const array = [...prev];
-            if (!key) {
-                array.push(newElement);
+    const [blogPost, setBlogPost] = useState<BlogPost>({
+        meta: { date: formatDate(new Date()), title: `Blata ${new Date().getFullYear()}` },
+        content: []
+    });
+    const onAddClick = (id: string | null) => {
+        setBlogPost((prevPost) => {
+            const content = [...prevPost.content];
+            const newItem: Partial<ContentItem> = { id: crypto.randomUUID(), type: 'paragraph' };
+            if (id == null) {
+                content.push(newItem);
             } else {
-                const index = array.findIndex((item) => item.key === key);
-                if (index !== -1) {
-                    array.splice(index + 1, 0, newElement);
-                } else {
-                    array.push(newElement);
-                }
+                const index = content.findIndex((it) => it.id === id)! + 1;
+                content.splice(index, 0, newItem);
             }
-            return array;
+            return {
+                meta: prevPost.meta,
+                content
+            };
         });
     };
-    const onClearClick = (key: string) => {
-        setElements((prev) => {
-            setContentByKey((items) => {
-                const result = { ...items };
-                if (result.hasOwnProperty(key)) {
-                    delete result[key];
-                }
-                return result;
-            });
-            return prev.filter((it) => it.key !== key);
+    const onClearClick = (id: string) => {
+        setBlogPost((prevPost) => {
+            return {
+                meta: prevPost.meta,
+                content: prevPost.content.filter((it) => it.id !== id)
+            };
         });
     };
     const onDownloadClick = () => {
-        console.log(config);
+        console.log(cleanBlogPost(blogPost));
     };
-    useEffect(() => {
-        setConfig(
-            JSON.stringify(
-                {
-                    meta,
-                    content: elements.map((it) => (it.key ? contentByKey[it.key] : null)).filter((it) => it != null)
-                },
-                null,
-                4
-            )
-        );
-    }, [meta, elements, contentByKey]);
     return (
         <div className="flex">
             <div className="w-1/2 p-4 overflow-y-scroll" style={{ height: '100vh' }}>
@@ -71,29 +48,54 @@ export default function Home() {
                     <div className="w-md">
                         <TextInput
                             label="Titulek (součástí URL, vynech diakritiku)"
-                            defaultValue={meta.title}
+                            defaultValue={blogPost.meta.title}
                             maxLength={64}
-                            onChangeAction={(value) => setMeta((prev) => ({ ...prev, title: value }))}
+                            onChangeAction={(value) =>
+                                setBlogPost((prev) => {
+                                    const newValue: BlogPost = { ...prev };
+                                    newValue.meta.title = value;
+                                    return newValue;
+                                })
+                            }
                         ></TextInput>
                     </div>
                     <div className="w-md pt-4">
                         <TextInput
                             label="Datum článku (YYYY-MM-DD)"
-                            defaultValue={meta.date}
+                            defaultValue={blogPost.meta.date}
                             maxLength={10}
-                            onChangeAction={(value) => setMeta((prev) => ({ ...prev, date: value }))}
+                            onChangeAction={(value) =>
+                                setBlogPost((prev) => {
+                                    const newValue: BlogPost = { ...prev };
+                                    newValue.meta.date = value;
+                                    return newValue;
+                                })
+                            }
                         ></TextInput>
                     </div>
                 </div>
-                {elements.map((it) => (
-                    <div key={it.key} className="flex border-b border-gray-300 pt-4 pb-4">
-                        <a onClick={() => onClearClick(it.key!)} className="mt-1 mr-1 cursor-pointer text-red-600" title="Odebrat">
+                {blogPost.content.map((item) => (
+                    <div key={item.id} className="flex border-b border-gray-300 pt-4 pb-4">
+                        {item.id}
+                        <a onClick={() => onClearClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-red-600" title="Odebrat">
                             <Cancel />
                         </a>
-                        <a onClick={() => onAddClick(it.key)} className="mt-1 mr-1 cursor-pointer text-green-900" title="Přidat">
+                        <a onClick={() => onAddClick(item.id!)} className="mt-1 mr-1 cursor-pointer text-green-900" title="Přidat">
                             <AddCircle />
                         </a>
-                        <div>{it}</div>
+                        <div>
+                            <BlogPostElement
+                                item={item}
+                                onChangeAction={(newItem) => {
+                                    setBlogPost((prevPost) => {
+                                        return {
+                                            meta: prevPost.meta,
+                                            content: prevPost.content.map((it) => (it.id === item.id ? newItem : it))
+                                        };
+                                    });
+                                }}
+                            />
+                        </div>
                     </div>
                 ))}
                 <div className="flex w-full justify-end pt-10">
@@ -107,7 +109,9 @@ export default function Home() {
                 </div>
             </div>
             <div className="w-1/2 p-4 bg-gray-100 overflow-y-scroll" style={{ height: '100vh' }}>
-                <code className="whitespace-pre-wrap p-1 font-mono">{config}</code>
+                <code className="whitespace-pre-wrap p-1 font-mono">
+                    <BlogPostPreview blogPost={blogPost}></BlogPostPreview>
+                </code>
             </div>
         </div>
     );

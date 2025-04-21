@@ -2,14 +2,15 @@
 
 import Select, { Option } from '@/components/Select';
 import { ContentItem, ContentItemType } from '@/app/BlogPost';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextInput from '@/components/TextInput';
 
 interface Props {
-    onChangeAction: (content: ContentItem | null) => void;
+    onChangeAction: (content: Partial<ContentItem>) => void;
+    item: Partial<ContentItem>;
 }
 
-const elementTypeOptions = [
+const elementTypeOptions: Option[] = [
     { value: 'h1', label: 'Nadpis 1' },
     { value: 'h2', label: 'Nadpis 2' },
     { value: 'h3', label: 'Nadpis 3' },
@@ -20,19 +21,19 @@ const elementTypeOptions = [
     { value: 'end-of-excerpt', label: 'Konec náhledu' }
 ];
 
-function isValid(item: Partial<ContentItem>): item is ContentItem {
-    if (item == null || item.type == null) {
-        return false;
-    } else if (['h1', 'h2', 'h3', 'paragraph', 'comment'].includes(item.type)) {
-        return item.content != null && item.content != '';
-    }
-    return true;
-}
-
-export default function BlogPostElement({ onChangeAction }: Props) {
-    const [type, setType] = useState<ContentItemType>('h1');
-    const [item, setItem] = useState<Partial<ContentItem>>({ type: 'h1' });
-    const onSelectChange = (option: Option | undefined) => {
+export default function BlogPostElement({ onChangeAction, item }: Props) {
+    const [elementType, setElementType] = useState<Option>(elementTypeOptions.find((it) => it.value === 'paragraph')!);
+    useEffect(() => {
+        if (item.type) {
+            const elementType: Option =
+                item.type === 'comment' && item.content === 'more'
+                    ? elementTypeOptions.find((it) => it.value === 'end-of-excerpt')!
+                    : elementTypeOptions.find((it) => it.value === item.type)!;
+            setElementType(elementType);
+        }
+    }, [item.type]);
+    const onSelectChange = (option: Option) => {
+        setElementType(option);
         const type = option?.value;
         if (!type) {
             return;
@@ -49,70 +50,52 @@ export default function BlogPostElement({ onChangeAction }: Props) {
                     'end-of-excerpt': 'comment'
                 } as Record<string, ContentItemType>
             )[`${type}`] ?? 'paragraph';
-        setType(newType);
-        const newItem: Partial<ContentItem> = { type: newType };
+        const newItem: Partial<ContentItem> = { id: item.id, type: newType };
         if (item) {
             if (type === 'end-of-excerpt') {
                 newItem.content = 'more';
             }
         }
-        setItem(newItem);
-        onChangeAction(isValid(newItem) ? newItem : null);
+        onChangeAction(newItem);
     };
     return (
         <div className="flex flex-wrap gap-1 w-full">
             <div className="w-3xs">
-                <Select options={elementTypeOptions} onChangeAction={onSelectChange} />
+                <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
-            {type === 'h1' ? (
+            {item.type === 'h1' ? (
                 <div className="w-md">
                     <TextInput
                         defaultValue={item?.content as string}
                         maxLength={128}
-                        onChangeAction={(value) => {
-                            const newItem = { type, content: value };
-                            setItem(newItem);
-                            onChangeAction(isValid(newItem) ? newItem : null);
-                        }}
+                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
                     ></TextInput>
                 </div>
             ) : null}
-            {type === 'h2' ? (
+            {item.type === 'h2' ? (
                 <div className="w-md">
                     <TextInput
                         defaultValue={item?.content as string}
                         maxLength={128}
-                        onChangeAction={(value) => {
-                            const newItem = { type, content: value };
-                            setItem(newItem);
-                            onChangeAction(isValid(newItem) ? newItem : null);
-                        }}
+                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
                     ></TextInput>
                 </div>
             ) : null}
-            {type === 'h3' ? (
+            {item.type === 'h3' ? (
                 <div className="w-md">
                     <TextInput
                         defaultValue={item?.content as string}
                         maxLength={128}
-                        onChangeAction={(value) => {
-                            const newItem = { type, content: value };
-                            setItem(newItem);
-                            onChangeAction(isValid(newItem) ? newItem : null);
-                        }}
+                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
                     ></TextInput>
                 </div>
             ) : null}
-            {type === 'paragraph' ? (
+            {item.type === 'paragraph' ? (
                 <div className="w-md">
                     <TextInput
                         defaultValue={item?.content as string}
                         maxLength={128}
-                        onChangeAction={(value) => {
-                            const newItem = { type, content: value };
-                            setItem(newItem);
-                            onChangeAction(isValid(newItem) ? newItem : null);
-                        }}
+                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
                     ></TextInput>
                 </div>
             ) : null}

@@ -1,16 +1,15 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { classNames } from '@/utils/css';
 
 export interface Props {
     label?: string;
-    defaultValue?: Option;
+    selected: Option;
     options: Option[];
-    onChangeAction: (option: Option | undefined) => void;
-    textClassName?: string;
+    onChangeAction: (option: Option) => void;
 }
 
 export interface Option {
@@ -18,11 +17,9 @@ export interface Option {
     label: string;
 }
 
-export default function Select({ label, options, defaultValue, onChangeAction, textClassName }: Props) {
-    const [selected, setSelected] = useState<Option>(defaultValue ?? options[0]);
+export default function Select({ label, options, selected, onChangeAction }: Props) {
     const handleChange = (option: Option) => {
         onChangeAction(option);
-        setSelected(option);
     };
     return (
         <Listbox value={selected} onChange={handleChange}>
@@ -34,8 +31,7 @@ export default function Select({ label, options, defaultValue, onChangeAction, t
                     <div className="relative">
                         <Listbox.Button
                             className={classNames(
-                                'relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6',
-                                textClassName ?? ''
+                                'relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6'
                             )}
                         >
                             <span className={classNames('block truncate')}>{selected.label}</span>
