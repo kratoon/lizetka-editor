@@ -5,10 +5,11 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import Cancel from '@mui/icons-material/Cancel';
 import BlogPostElement from '@/components/BlogPostElement';
 import TextInput from '@/components/TextInput';
-import { BlogPost, cleanBlogPost, ContentItem, createDefaultBlogPost } from '@/app/BlogPost';
+import { BlogPost, cleanBlogPost, ContentItem } from '@/app/BlogPost';
 import BlogPostPreview from '@/components/BlogPostPreview';
 import { downloadFile } from '@/utils/fileDownload';
 import ButtonDownload from '@/components/ButtonDownload';
+import { createDefaultBlogPost } from '@/utils/defaultBlogPost';
 
 export default function Home() {
     const [blogPost, setBlogPost] = useState<BlogPost>(createDefaultBlogPost());

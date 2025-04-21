@@ -4,6 +4,7 @@ import Select, { Option } from '@/components/Select';
 import { ContentItem, ContentItemType } from '@/app/BlogPost';
 import { useEffect, useState } from 'react';
 import TextInput from '@/components/TextInput';
+import ButtonUploadImage from '@/components/ButtonUploadImage';
 
 interface Props {
     onChangeAction: (content: Partial<ContentItem>) => void;
@@ -15,7 +16,7 @@ const elementTypeOptions: Option[] = [
     { value: 'h2', label: 'Nadpis 2' },
     { value: 'h3', label: 'Nadpis 3' },
     { value: 'paragraph', label: 'Odstavec' },
-    // { value: 'image', label: 'Obrázek' },
+    { value: 'image', label: 'Obrázek' },
     // { value: 'video', label: 'Video' },
     // { value: 'gallery', label: 'Galerie' },
     { value: 'end-of-excerpt', label: 'Konec náhledu' }
@@ -96,6 +97,11 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                         defaultValue={item?.content as string}
                         onChangeAction={(value) => onChangeAction({ ...item, content: value })}
                     ></TextInput>
+                </div>
+            ) : null}
+            {item.type === 'image' ? (
+                <div className="w-md">
+                    <ButtonUploadImage onUpload={(value) => onChangeAction({ ...item, content: value ?? '' })} />
                 </div>
             ) : null}
         </div>
