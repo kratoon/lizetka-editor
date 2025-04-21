@@ -4,7 +4,7 @@
   "homepage": "https://editor.lizetka.cz",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build ; cp CNAME out/",
     "start": "next start",
     "lint": "next lint",
     "predeploy": "npm run build",
