@@ -94,7 +94,6 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                 <div className="w-md">
                     <TextInput
                         defaultValue={item?.content as string}
-                        maxLength={128}
                         onChangeAction={(value) => onChangeAction({ ...item, content: value })}
                     ></TextInput>
                 </div>

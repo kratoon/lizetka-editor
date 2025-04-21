@@ -39,14 +39,16 @@ export interface GalleryVideoItem {
     link: string;
 }
 
-export function cleanBlogPost(blogPost: BlogPost) {
+export function cleanBlogPost(blogPost: BlogPost, preserveIds: boolean = false) {
     return {
         meta: blogPost.meta,
         content: blogPost.content
             .filter((it) => isValidContentItem(it))
             .map((it: Partial<ContentItem>) => {
                 const cleanItem = { ...it };
-                delete cleanItem.id;
+                if (!preserveIds) {
+                    delete cleanItem.id;
+                }
                 return cleanItem;
             })
     };
