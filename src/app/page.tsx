@@ -38,11 +38,24 @@ export default function Home() {
         });
     };
     const onDownloadClick = () => {
-        downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.date}.json`);
+        const isValidDate = blogPost.meta.date != null && blogPost.meta.date !== '' && /^\d{4}-\d{2}-\d{2}$/.test(blogPost.meta.date);
+        const isValidTitle = blogPost.meta.title != null && blogPost.meta.title !== '' && /^[a-zA-Z0-9 ]*$/.test(blogPost.meta.title);
+        if (!isValidTitle) {
+            alert('Titulek není validní');
+        } else if (!isValidDate) {
+            alert('Datum článku není validní');
+        } else {
+            downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.title.toLowerCase().replace(/\s/, '-')}.json`);
+        }
     };
     return (
         <div className="flex">
             <div className="w-1/2 p-4 overflow-y-scroll" style={{ height: '100vh' }}>
+                <div className="flex w-full justify-end items-center">
+                    <span className="mr-2">
+                        <ButtonDownload onClick={onDownloadClick} />
+                    </span>
+                </div>
                 <div className="flex flex-col border-b border-gray-300 pt-4 pb-4">
                     <div className="w-md">
                         <TextInput
