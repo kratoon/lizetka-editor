@@ -19,10 +19,10 @@ const elementTypeOptions: Option[] = [
     { value: 'h2', label: 'Nadpis 2' },
     { value: 'h3', label: 'Nadpis 3' },
     { value: 'paragraph', label: 'Odstavec' },
-    { value: 'image', label: 'Obrázek' },
     { value: 'youtube', label: 'YouTube' },
+    { value: 'image', label: 'Obrázek' },
+    { value: 'gallery', label: 'Galerie' },
     // { value: 'video', label: 'Video' },
-    // { value: 'gallery', label: 'Galerie' },
     { value: 'end-of-excerpt', label: 'Konec náhledu' }
 ];
 

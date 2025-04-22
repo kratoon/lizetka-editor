@@ -55,11 +55,19 @@ export function cleanBlogPost(blogPost: BlogPost, preserveIds: boolean = false) 
 }
 
 export function isValidContentItem(item: Partial<ContentItem>): item is ContentItem {
-    const contentIsNonBlankString = item.content != null && typeof item.content === 'string' && item.content != '';
+    const isNotBlank = (value: unknown) => value != null && value != '' && typeof value === 'string';
     if (item?.type == null) {
         return false;
     } else if (['h1', 'h2', 'h3', 'paragraph', 'comment', 'image', 'youtube'].includes(item.type)) {
-        return contentIsNonBlankString;
+        return isNotBlank(item.content);
+    } else if (item.type === 'gallery') {
+        return (
+            item.content != null &&
+            Array.isArray(item.type) &&
+            (item.content as GalleryItem[]).every((it) => {
+                return it.type === 'image' && isNotBlank(it.title) && isNotBlank(it.src) && isNotBlank(it.link);
+            })
+        );
     }
     return false;
 }

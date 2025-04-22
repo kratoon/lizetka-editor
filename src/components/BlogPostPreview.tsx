@@ -1,4 +1,4 @@
-import { BlogPost, cleanBlogPost } from '@/app/BlogPost';
+import { BlogPost, cleanBlogPost, GalleryItem } from '@/app/BlogPost';
 import { useState } from 'react';
 import Switch from '@/components/Switch';
 
@@ -43,6 +43,7 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
                         {it.type === 'youtube' ? <YoutubePreview youtubeId={it.content as string} /> : null}
                         {it.type === 'comment' ? <EndOfExcerpt /> : null}
                         {it.type === 'image' ? <ImagePreview image={it.content as string}></ImagePreview> : null}
+                        {it.type === 'gallery' ? <GalleryPreview items={it.content as GalleryItem[]} /> : null}
                     </div>
                 );
             })}
@@ -50,14 +51,32 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
     );
 }
 
+function GalleryPreview({ items }: { items: GalleryItem[] }) {
+    return (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {items.map((it) => (
+                <div
+                    key={it.link + it.title}
+                    onClick={() => {
+                        window.location.href = it.link;
+                    }}
+                >
+                    {it.title}
+                    <img src={it.src} className="h-40 w-full max-w-full rounded-lg object-cover object-center" alt={it.title} />
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function ImagePreview({ image }: { image: string }) {
-    return <img src={image} alt="image" />;
+    return <img src={image} alt="image" className="mt-4 mb-4" />;
 }
 
 function YoutubePreview({ youtubeId }: { youtubeId: string }) {
     return (
         <iframe
-            className="w-full h-[20rem] mt-[20px] mb-[20px]"
+            className="w-full h-[20rem] mt-4 mb-4"
             src={`https://www.youtube.com/embed/${youtubeId}`}
             title="YouTube video player"
             frameBorder="0"
