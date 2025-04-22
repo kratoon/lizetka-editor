@@ -10,6 +10,7 @@ import BlogPostPreview from '@/components/BlogPostPreview';
 import { downloadFile } from '@/utils/fileDownload';
 import ButtonDownload from '@/components/ButtonDownload';
 import { createDefaultBlogPost } from '@/utils/defaultBlogPost';
+import Tooltip from '@/components/Tooltip';
 
 export default function Home() {
     const [blogPost, setBlogPost] = useState<BlogPost>(createDefaultBlogPost());
@@ -40,10 +41,15 @@ export default function Home() {
     const onDownloadClick = () => {
         const isValidDate = blogPost.meta.date != null && blogPost.meta.date !== '' && /^\d{4}-\d{2}-\d{2}$/.test(blogPost.meta.date);
         const isValidTitle = blogPost.meta.title != null && blogPost.meta.title !== '' && /^[a-zA-Z0-9 ]*$/.test(blogPost.meta.title);
+        const areCategoriesValid =
+            blogPost.meta.categories != null &&
+            blogPost.meta.categories.every((it) => it !== '' && /^[áčďéěíňóřšťúůýža-zA-Z0-9 ]*$/.test(it));
         if (!isValidTitle) {
             alert('Titulek není validní');
         } else if (!isValidDate) {
             alert('Datum článku není validní');
+        } else if (!areCategoriesValid) {
+            alert('Kategorie nejsou validní, pouze alfanumerický hodnoty jsou povoleny.');
         } else {
             downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.title.toLowerCase().replace(/\s/, '-')}.json`);
         }
@@ -56,10 +62,11 @@ export default function Home() {
                         <ButtonDownload onClick={onDownloadClick} />
                     </span>
                 </div>
-                <div className="flex flex-col border-b border-gray-300 pt-4 pb-4">
-                    <div className="w-md">
+                <div className="flex flex-wrap border-b border-gray-300 pt-4 pb-4">
+                    <div className="w-1/2 px-1 py-2">
                         <TextInput
-                            label="Titulek (součástí URL, vynech diakritiku)"
+                            label="Titulek"
+                            helpText={<Tooltip text="Vynech diakritiku, je součástí URL." />}
                             defaultValue={blogPost.meta.title}
                             maxLength={64}
                             onChangeAction={(value) =>
@@ -71,7 +78,7 @@ export default function Home() {
                             }
                         ></TextInput>
                     </div>
-                    <div className="w-md pt-4">
+                    <div className="w-1/2 px-1 py-2">
                         <TextInput
                             label="Datum článku (YYYY-MM-DD)"
                             defaultValue={blogPost.meta.date}
@@ -80,6 +87,43 @@ export default function Home() {
                                 setBlogPost((prev) => {
                                     const newValue: BlogPost = { ...prev };
                                     newValue.meta.date = value;
+                                    return newValue;
+                                })
+                            }
+                        ></TextInput>
+                    </div>
+                    <div className="w-1/2 px-1 py-2">
+                        <TextInput
+                            label="Kategorie"
+                            helpText={<Tooltip text="Heslovitě kategorie článku. Více hodnot možno oddělit čárkou." />}
+                            defaultValue={(blogPost.meta.categories ?? []).join(',')}
+                            maxLength={64}
+                            onChangeAction={(value) =>
+                                setBlogPost((prev) => {
+                                    const newValue: BlogPost = { ...prev };
+                                    newValue.meta.categories = value
+                                        .toLowerCase()
+                                        .split(',')
+                                        .map((it) => it.trim())
+                                        .filter((it) => it !== '');
+                                    return newValue;
+                                })
+                            }
+                        ></TextInput>
+                    </div>
+                    <div className="w-1/2 px-1 py-2">
+                        <TextInput
+                            label="Autor článku"
+                            helpText={<Tooltip text="Odpovídá uživatelskému jménu na GitHub. Více hodnot možno oddělit čárkou." />}
+                            defaultValue={(blogPost.meta.authors ?? []).join(',')}
+                            maxLength={64}
+                            onChangeAction={(value) =>
+                                setBlogPost((prev) => {
+                                    const newValue: BlogPost = { ...prev };
+                                    newValue.meta.authors = value
+                                        .split(',')
+                                        .map((it) => it.trim())
+                                        .filter((it) => it !== '');
                                     return newValue;
                                 })
                             }

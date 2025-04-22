@@ -1,6 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search';
 import { classNames } from '@/utils/css';
 import { ExclamationCircleIcon, UserIcon } from '@heroicons/react/20/solid';
+import { ReactElement } from 'react';
 
 interface Props {
     label?: string;
@@ -10,16 +11,20 @@ interface Props {
     onChangeAction?: (value: string) => void;
     error?: string | null;
     maxLength?: number;
+    helpText?: ReactElement;
 }
 
-export default function TextInput({ label, icon, defaultValue, type, onChangeAction, error, maxLength }: Props) {
+export default function TextInput({ label, icon, defaultValue, type, onChangeAction, error, maxLength, helpText }: Props) {
     return (
         <div>
-            {label ? (
-                <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 mb-2 ">
-                    {label}
-                </label>
-            ) : null}
+            <div className="flex">
+                {label ? (
+                    <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 mb-2 ">
+                        {label}
+                    </label>
+                ) : null}
+                {helpText ? <span className="pl-2 pt-1">{helpText}</span> : null}
+            </div>
             <div className="relative rounded-md shadow-sm">
                 <input
                     onChange={(event) => onChangeAction && onChangeAction(event.target.value)}

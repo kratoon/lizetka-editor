@@ -9,7 +9,7 @@ export function createDefaultBlogPost(): BlogPost {
     }
     const title = `Blata ${new Date().getFullYear()}`;
     return {
-        meta: { date: formatDate(new Date()), title },
+        meta: { date: formatDate(new Date()), title, categories: ['blata', 'tábor'], authors: [] },
         content: [
             { type: 'h1' as ContentItemType, content: title },
             {
