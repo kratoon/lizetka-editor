@@ -66,7 +66,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
         onChangeAction(newItem);
     };
     return (
-        <div className={classNames('flex flex-wrap gap-1 w-full justify-between', item.type === 'image' ? 'space-between' : null)}>
+        <div className={classNames('flex flex-wrap gap-1 w-full', item.type === 'image' ? 'justify-between' : null)}>
             <div className="w-[9rem]">
                 <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
