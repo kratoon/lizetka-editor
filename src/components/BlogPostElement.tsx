@@ -5,11 +5,14 @@ import { ContentItem, ContentItemType } from '@/app/BlogPost';
 import { useEffect, useState } from 'react';
 import TextInput from '@/components/TextInput';
 import ButtonUploadImage from '@/components/ButtonUploadImage';
+import { classNames } from '@/utils/css';
 
 interface Props {
     onChangeAction: (content: Partial<ContentItem>) => void;
     item: Partial<ContentItem>;
 }
+
+const headings: string[] = ['h1', 'h2', 'h3', 'h4'];
 
 const elementTypeOptions: Option[] = [
     { value: 'h1', label: 'Nadpis 1' },
@@ -32,9 +35,8 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                     : elementTypeOptions.find((it) => it.value === item.type)!;
             setElementType(elementType);
         }
-    }, [item.type]);
+    }, [item.type, item.content]);
     const onSelectChange = (option: Option) => {
-        setElementType(option);
         const type = option?.value;
         if (!type) {
             return;
@@ -56,34 +58,20 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
             if (type === 'end-of-excerpt') {
                 newItem.content = 'more';
             }
+            if (item.type != null && headings.includes(item.type) && headings.includes(newType)) {
+                newItem.content = item.content;
+            }
         }
+        setElementType(option);
         onChangeAction(newItem);
     };
     return (
-        <div className="flex flex-wrap gap-1 w-full">
-            <div className="w-3xs">
+        <div className={classNames('flex flex-wrap gap-1 w-full', item.type === 'image' ? 'justify-between' : null)}>
+            <div className="w-[9rem]">
                 <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
-            {item.type === 'h1' ? (
-                <div className="w-md">
-                    <TextInput
-                        defaultValue={item?.content as string}
-                        maxLength={128}
-                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
-                    ></TextInput>
-                </div>
-            ) : null}
-            {item.type === 'h2' ? (
-                <div className="w-md">
-                    <TextInput
-                        defaultValue={item?.content as string}
-                        maxLength={128}
-                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
-                    ></TextInput>
-                </div>
-            ) : null}
-            {item.type === 'h3' ? (
-                <div className="w-md">
+            {item.type != null && headings.includes(item.type) ? (
+                <div className="grow">
                     <TextInput
                         defaultValue={item?.content as string}
                         maxLength={128}
@@ -92,7 +80,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                 </div>
             ) : null}
             {item.type === 'paragraph' ? (
-                <div className="w-md">
+                <div className="grow">
                     <TextInput
                         defaultValue={item?.content as string}
                         onChangeAction={(value) => onChangeAction({ ...item, content: value })}
@@ -100,7 +88,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                 </div>
             ) : null}
             {item.type === 'image' ? (
-                <div className="w-md">
+                <div className="">
                     <ButtonUploadImage onUpload={(value) => onChangeAction({ ...item, content: value ?? '' })} />
                 </div>
             ) : null}
