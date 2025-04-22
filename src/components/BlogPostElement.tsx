@@ -100,7 +100,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                 </div>
             ) : null}
             {item.type === 'image' ? (
-                <div className="w-md">
+                <div className="w-sm">
                     <ButtonUploadImage onUpload={(value) => onChangeAction({ ...item, content: value ?? '' })} />
                 </div>
             ) : null}
