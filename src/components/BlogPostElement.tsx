@@ -66,7 +66,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
     };
     return (
         <div className="flex flex-wrap gap-1 w-full">
-            <div className="w-3xs">
+            <div className="w-[9rem]">
                 <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
             {item.type != null && headings.includes(item.type) ? (
