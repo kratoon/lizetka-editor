@@ -50,6 +50,10 @@ export default function Home() {
             alert('Datum článku není validní');
         } else if (!areCategoriesValid) {
             alert('Kategorie nejsou validní, pouze alfanumerický hodnoty jsou povoleny.');
+        } else if (blogPost.content.filter((it) => it.type === 'comment' && it.content === 'more').length === 0) {
+            alert('Chybí konec náhledu. Přidej konec náhledu, ideálně za první krátkou část článku.');
+        } else if (blogPost.content.filter((it) => it.type === 'comment' && it.content === 'more').length > 1) {
+            alert('Konec náhledu může být specifikován pouze jednou');
         } else {
             downloadFile(JSON.stringify(cleanBlogPost(blogPost), null, 4), `${blogPost.meta.title.toLowerCase().replace(/\s/, '-')}.json`);
         }
