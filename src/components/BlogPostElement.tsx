@@ -5,6 +5,7 @@ import { ContentItem, ContentItemType } from '@/app/BlogPost';
 import { useEffect, useState } from 'react';
 import TextInput from '@/components/TextInput';
 import ButtonUploadImage from '@/components/ButtonUploadImage';
+import { classNames } from '@/utils/css';
 
 interface Props {
     onChangeAction: (content: Partial<ContentItem>) => void;
@@ -65,12 +66,12 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
         onChangeAction(newItem);
     };
     return (
-        <div className="flex flex-wrap gap-1 w-full">
+        <div className={classNames('flex flex-wrap gap-1 w-full justify-between', item.type === 'image' ? 'space-between' : null)}>
             <div className="w-[9rem]">
                 <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
             {item.type != null && headings.includes(item.type) ? (
-                <div className="w-md">
+                <div className="grow">
                     <TextInput
                         defaultValue={item?.content as string}
                         maxLength={128}
@@ -79,7 +80,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                 </div>
             ) : null}
             {item.type === 'paragraph' ? (
-                <div className="w-md">
+                <div className="grow">
                     <TextInput
                         defaultValue={item?.content as string}
                         onChangeAction={(value) => onChangeAction({ ...item, content: value })}
@@ -87,7 +88,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                 </div>
             ) : null}
             {item.type === 'image' ? (
-                <div className="w-sm">
+                <div className="">
                     <ButtonUploadImage onUpload={(value) => onChangeAction({ ...item, content: value ?? '' })} />
                 </div>
             ) : null}

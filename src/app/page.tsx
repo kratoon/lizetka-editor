@@ -102,19 +102,17 @@ export default function Home() {
                         >
                             <AddCircle />
                         </a>
-                        <div>
-                            <BlogPostElement
-                                item={item}
-                                onChangeAction={(newItem) => {
-                                    setBlogPost((prevPost) => {
-                                        return {
-                                            meta: prevPost.meta,
-                                            content: prevPost.content.map((it) => (it.id === item.id ? newItem : it))
-                                        };
-                                    });
-                                }}
-                            />
-                        </div>
+                        <BlogPostElement
+                            item={item}
+                            onChangeAction={(newItem) => {
+                                setBlogPost((prevPost) => {
+                                    return {
+                                        meta: prevPost.meta,
+                                        content: prevPost.content.map((it) => (it.id === item.id ? newItem : it))
+                                    };
+                                });
+                            }}
+                        />
                     </div>
                 ))}
                 <div className="flex w-full justify-end pt-10 items-center">
