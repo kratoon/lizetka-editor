@@ -11,6 +11,8 @@ interface Props {
     item: Partial<ContentItem>;
 }
 
+const headings: string[] = ['h1', 'h2', 'h3', 'h4'];
+
 const elementTypeOptions: Option[] = [
     { value: 'h1', label: 'Nadpis 1' },
     { value: 'h2', label: 'Nadpis 2' },
@@ -32,9 +34,8 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                     : elementTypeOptions.find((it) => it.value === item.type)!;
             setElementType(elementType);
         }
-    }, [item.type]);
+    }, [item.type, item.content]);
     const onSelectChange = (option: Option) => {
-        setElementType(option);
         const type = option?.value;
         if (!type) {
             return;
@@ -56,7 +57,11 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
             if (type === 'end-of-excerpt') {
                 newItem.content = 'more';
             }
+            if (item.type != null && headings.includes(item.type) && headings.includes(newType)) {
+                newItem.content = item.content;
+            }
         }
+        setElementType(option);
         onChangeAction(newItem);
     };
     return (
@@ -64,25 +69,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
             <div className="w-3xs">
                 <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
-            {item.type === 'h1' ? (
-                <div className="w-md">
-                    <TextInput
-                        defaultValue={item?.content as string}
-                        maxLength={128}
-                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
-                    ></TextInput>
-                </div>
-            ) : null}
-            {item.type === 'h2' ? (
-                <div className="w-md">
-                    <TextInput
-                        defaultValue={item?.content as string}
-                        maxLength={128}
-                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
-                    ></TextInput>
-                </div>
-            ) : null}
-            {item.type === 'h3' ? (
+            {item.type != null && headings.includes(item.type) ? (
                 <div className="w-md">
                     <TextInput
                         defaultValue={item?.content as string}
