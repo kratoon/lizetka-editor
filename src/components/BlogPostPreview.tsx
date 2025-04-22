@@ -40,6 +40,7 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
                         {it.type === 'h3' ? <h3 className="text-2xl mb-5 font-medium">{it.content as string}</h3> : null}
                         {it.type === 'h4' ? <h4 className="text-xl mb-5 font-medium">{it.content as string}</h4> : null}
                         {it.type === 'paragraph' ? <p className="mb-5">{it.content as string}</p> : null}
+                        {it.type === 'youtube' ? <YoutubePreview youtubeId={it.content as string} /> : null}
                         {it.type === 'comment' ? <EndOfExcerpt /> : null}
                         {it.type === 'image' ? <ImagePreview image={it.content as string}></ImagePreview> : null}
                     </div>
@@ -51,6 +52,20 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
 
 function ImagePreview({ image }: { image: string }) {
     return <img src={image} alt="image" />;
+}
+
+function YoutubePreview({ youtubeId }: { youtubeId: string }) {
+    return (
+        <iframe
+            className="w-full h-[20rem] mt-[20px] mb-[20px]"
+            src={`https://www.youtube.com/embed/${youtubeId}`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+        ></iframe>
+    );
 }
 
 function EndOfExcerpt() {

@@ -10,7 +10,7 @@ export interface Meta {
     categories?: string[];
 }
 
-export type ContentItemType = 'h1' | 'h2' | 'h3' | 'h4' | 'comment' | 'paragraph' | 'image' | 'gallery';
+export type ContentItemType = 'h1' | 'h2' | 'h3' | 'h4' | 'comment' | 'paragraph' | 'image' | 'gallery' | 'youtube';
 
 export interface ContentItem {
     type: ContentItemType;
@@ -58,7 +58,7 @@ export function isValidContentItem(item: Partial<ContentItem>): item is ContentI
     const contentIsNonBlankString = item.content != null && typeof item.content === 'string' && item.content != '';
     if (item?.type == null) {
         return false;
-    } else if (['h1', 'h2', 'h3', 'paragraph', 'comment', 'image'].includes(item.type)) {
+    } else if (['h1', 'h2', 'h3', 'paragraph', 'comment', 'image', 'youtube'].includes(item.type)) {
         return contentIsNonBlankString;
     }
     return false;
