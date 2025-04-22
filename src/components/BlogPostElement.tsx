@@ -20,6 +20,7 @@ const elementTypeOptions: Option[] = [
     { value: 'h3', label: 'Nadpis 3' },
     { value: 'paragraph', label: 'Odstavec' },
     { value: 'image', label: 'Obrázek' },
+    { value: 'youtube', label: 'YouTube' },
     // { value: 'video', label: 'Video' },
     // { value: 'gallery', label: 'Galerie' },
     { value: 'end-of-excerpt', label: 'Konec náhledu' }
@@ -50,6 +51,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                     paragraph: 'paragraph',
                     image: 'image',
                     gallery: 'gallery',
+                    youtube: 'youtube',
                     'end-of-excerpt': 'comment'
                 } as Record<string, ContentItemType>
             )[`${type}`] ?? 'paragraph';
@@ -70,7 +72,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
             <div className="w-[9rem]">
                 <Select options={elementTypeOptions} onChangeAction={onSelectChange} selected={elementType} />
             </div>
-            {item.type != null && headings.includes(item.type) ? (
+            {item.type != null && [...headings, 'youtube'].includes(item.type) ? (
                 <div className="grow">
                     <TextInput
                         defaultValue={item?.content as string}

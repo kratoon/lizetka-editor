@@ -38,6 +38,10 @@ export function createDefaultBlogPost(): BlogPost {
                     'Fusce posuere risus sit amet turpis placerat feugiat. Suspendisse elementum lobortis justo nec efficitur. Cras commodo, metus at aliquam faucibus, mauris arcu dapibus massa, a aliquam lacus nulla non erat. Phasellus pharetra tellus ultricies lectus mattis facilisis. Praesent ut finibus neque. Donec dignissim urna quis maximus rhoncus. Nulla dui dui, molestie congue maximus ac, sagittis in mauris. Maecenas bibendum eu leo quis mollis. Integer tempus nibh est, congue placerat lectus luctus vel. Nam nisl tellus, accumsan ac nibh nec, mattis congue nibh. Donec id massa mauris. Pellentesque quis dui risus. Duis et venenatis magna, ullamcorper hendrerit purus.'
             },
             {
+                type: 'youtube' as ContentItemType,
+                content: '-hNv66ARE9s'
+            },
+            {
                 type: 'h2' as ContentItemType,
                 content: 'Večeře'
             },
