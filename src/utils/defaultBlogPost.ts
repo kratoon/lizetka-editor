@@ -1,4 +1,5 @@
 import { BlogPost, ContentItemType } from '@/app/BlogPost';
+import { newId } from '@/utils/string';
 
 export function createDefaultBlogPost(): BlogPost {
     function formatDate(date: Date) {
@@ -50,6 +51,6 @@ export function createDefaultBlogPost(): BlogPost {
                 content:
                     'Sed accumsan imperdiet dolor non volutpat. Nunc nec diam libero. Nullam a gravida leo, pharetra gravida justo. Morbi sit amet lacinia nibh. Integer varius nisi sed dui pulvinar efficitur. Nunc sodales diam vitae lectus varius, et hendrerit nisl efficitur. In ac faucibus justo. Morbi sodales leo id mi mollis, sit amet aliquet nisl hendrerit.'
             }
-        ].map((it) => ({ ...it, id: crypto.randomUUID() }))
+        ].map((it) => ({ ...it, id: newId() }))
     };
 }

@@ -8,7 +8,7 @@ export default function CustomTooltip({ text }: Props) {
     return (
         <Tooltip
             content={
-                <div className="w-80  pl-2">
+                <div className="bg-black w-80 pl-2">
                     <div>{text}</div>
                 </div>
             }

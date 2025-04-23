@@ -11,13 +11,14 @@ import { downloadFile } from '@/utils/fileDownload';
 import ButtonDownload from '@/components/ButtonDownload';
 import { createDefaultBlogPost } from '@/utils/defaultBlogPost';
 import Tooltip from '@/components/Tooltip';
+import { newId } from '@/utils/string';
 
 export default function Home() {
     const [blogPost, setBlogPost] = useState<BlogPost>(createDefaultBlogPost());
     const onAddClick = (id: string | null) => {
         setBlogPost((prevPost) => {
             const content = [...prevPost.content];
-            const newItem: Partial<ContentItem> = { id: crypto.randomUUID(), type: 'paragraph' };
+            const newItem: Partial<ContentItem> = { id: newId(), type: 'paragraph' };
             if (id == null) {
                 content.push(newItem);
             } else {

@@ -17,6 +17,7 @@
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
     "@mui/icons-material": "^7.0.2",
+    "@salesforce/ts-types": "^2.0.12",
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

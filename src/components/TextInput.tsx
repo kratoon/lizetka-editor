@@ -19,7 +19,7 @@ export default function TextInput({ label, icon, defaultValue, type, onChangeAct
         <div>
             <div className="flex">
                 {label ? (
-                    <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900 mb-2 ">
+                    <label htmlFor="search" className="block text-sm font-medium leading-6 text-gray-900">
                         {label}
                     </label>
                 ) : null}
