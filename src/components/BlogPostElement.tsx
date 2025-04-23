@@ -162,7 +162,6 @@ function Gallery({ item, onChangeAction }: { item: Partial<ContentItem>; onChang
                     <ButtonUploadImage
                         id={it.id!}
                         onUploadAction={(value) => {
-                            console.log('upload', value ?? '');
                             onChangeAction({
                                 ...item,
                                 content: content.map((curr) => (curr.id === it.id ? { ...curr, src: value ?? '' } : curr))
