@@ -41,16 +41,16 @@ export function cleanBlogPost(blogPost: BlogPost, preserveIds: boolean = false) 
     return {
         meta: blogPost.meta,
         content: blogPost.content
-            // .filter((it) => isValidContentItem(it))
+            .filter((it) => isValidContentItem(it))
             .map((it: Partial<ContentItem>) => {
                 const cleanItem = { ...it };
                 if (!preserveIds) {
-                    // delete cleanItem.id;
+                    delete cleanItem.id;
                 }
                 if (Array.isArray(cleanItem.content)) {
                     cleanItem.content.forEach((contentItem: Partial<GalleryImageItem>) => {
                         if (!preserveIds) {
-                            // delete contentItem.id;
+                            delete contentItem.id;
                         }
                     });
                 }
