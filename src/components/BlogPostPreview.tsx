@@ -1,6 +1,8 @@
-import { BlogPost, cleanBlogPost, GalleryItem } from '@/app/BlogPost';
+import { BlogPost, cleanBlogPost, GalleryImageItem, isGalleryImageItem } from '@/app/BlogPost';
 import { useState } from 'react';
 import Switch from '@/components/Switch';
+import { isNotBlank } from '@/utils/string';
+import { classNames } from '@/utils/css';
 
 export interface Props {
     blogPost: BlogPost;
@@ -43,7 +45,7 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
                         {it.type === 'youtube' ? <YoutubePreview youtubeId={it.content as string} /> : null}
                         {it.type === 'comment' ? <EndOfExcerpt /> : null}
                         {it.type === 'image' ? <ImagePreview image={it.content as string}></ImagePreview> : null}
-                        {it.type === 'gallery' ? <GalleryPreview items={it.content as GalleryItem[]} /> : null}
+                        {it.type === 'gallery' ? <GalleryPreview items={it.content as GalleryImageItem[]} /> : null}
                     </div>
                 );
             })}
@@ -51,20 +53,25 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
     );
 }
 
-function GalleryPreview({ items }: { items: GalleryItem[] }) {
+function GalleryPreview({ items }: { items: GalleryImageItem[] }) {
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {items.map((it) => (
-                <div
-                    key={it.link + it.title}
-                    onClick={() => {
-                        window.location.href = it.link;
-                    }}
-                >
-                    {it.title}
-                    <img src={it.src} className="h-40 w-full max-w-full rounded-lg object-cover object-center" alt={it.title} />
-                </div>
-            ))}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 mb-8">
+            {items
+                .filter((it) => isGalleryImageItem(it) && isNotBlank(it.src))
+                .map((it) => (
+                    <div
+                        key={it.id}
+                        className={classNames(isNotBlank(it.link) ? 'cursor-pointer' : null)}
+                        onClick={() => {
+                            if (isNotBlank(it.link)) {
+                                window.open(it.link, '_blank')?.focus();
+                            }
+                        }}
+                    >
+                        <div>{it.title && isNotBlank(it.title) ? it.title : <div></div>}</div>
+                        <img src={it.src} className="h-40 w-full max-w-full rounded-lg object-cover object-center" alt={it.title} />
+                    </div>
+                ))}
         </div>
     );
 }
@@ -77,7 +84,11 @@ function YoutubePreview({ youtubeId }: { youtubeId: string }) {
     return (
         <iframe
             className="w-full h-[20rem] mt-4 mb-4"
-            src={`https://www.youtube.com/embed/${youtubeId}`}
+            src={
+                youtubeId.startsWith('https://')
+                    ? youtubeId.replace('https://www.youtube.com/watch', 'https://www.youtube.com/embed')
+                    : `https://www.youtube.com/embed/${youtubeId}`
+            }
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
