@@ -68,7 +68,7 @@ function GalleryPreview({ items }: { items: GalleryImageItem[] }) {
                             }
                         }}
                     >
-                        <div>{it.title && isNotBlank(it.title) ? it.title : <div></div>}</div>
+                        <div>{it.title && isNotBlank(it.title) ? it.title : <div>&nbsp;</div>}</div>
                         <img src={it.src} className="h-40 w-full max-w-full rounded-lg object-cover object-center" alt={it.title} />
                     </div>
                 ))}

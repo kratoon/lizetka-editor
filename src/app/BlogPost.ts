@@ -67,9 +67,9 @@ export function isValidContentItem(item: Partial<ContentItem>): item is ContentI
     } else if (item.type === 'gallery') {
         return (
             item.content != null &&
-            Array.isArray(item.type) &&
+            Array.isArray(item.content) &&
             (item.content as GalleryImageItem[]).every((it) => {
-                return it.type === 'image' && isNotBlank(it.title) && isNotBlank(it.src) && isNotBlank(it.link);
+                return it.type === 'image';
             })
         );
     }
