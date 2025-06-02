@@ -46,6 +46,7 @@ function Preview({ blogPost }: { blogPost: BlogPost }) {
                         {it.type === 'comment' ? <EndOfExcerpt /> : null}
                         {it.type === 'image' ? <ImagePreview image={it.content as string}></ImagePreview> : null}
                         {it.type === 'gallery' ? <GalleryPreview items={it.content as GalleryImageItem[]} /> : null}
+                        {it.type === 'file' ? <FilePreview file={it.content as string} /> : null}
                     </div>
                 );
             })}
@@ -108,5 +109,14 @@ function EndOfExcerpt() {
                 <span className="bg-gray-100 px-2 text-sm text-gray-500">konec náhledu</span>
             </div>
         </div>
+    );
+}
+
+function FilePreview({ file }: { file: string }) {
+    return (
+        <a href={`https://lizetka.cz/public/files/${file}`} target="_blank">
+            <div>{file}</div>
+            <img src={`https://lizetka.cz/public/icon-pdf.png`} className="h-[4rem] mb-[2rem]" alt={file}></img>
+        </a>
     );
 }

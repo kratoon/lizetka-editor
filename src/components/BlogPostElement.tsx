@@ -26,6 +26,7 @@ const elementTypeOptions: Option[] = [
     { value: 'youtube', label: 'YouTube' },
     { value: 'image', label: 'Obrázek' },
     { value: 'gallery', label: 'Galerie' },
+    { value: 'file', label: 'Soubor (pdf)' },
     // { value: 'video', label: 'Video' },
     { value: 'end-of-excerpt', label: 'Konec náhledu' }
 ];
@@ -56,6 +57,7 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                     image: 'image',
                     gallery: 'gallery',
                     youtube: 'youtube',
+                    file: 'file',
                     'end-of-excerpt': 'comment'
                 } as Record<string, ContentItemType>
             )[`${type}`] ?? 'paragraph';
@@ -121,6 +123,14 @@ export default function BlogPostElement({ onChangeAction, item }: Props) {
                             <AddCircle />
                         </a>
                     </div>
+                </div>
+            ) : null}
+            {item.type === 'file' ? (
+                <div className="grow">
+                    <TextInput
+                        defaultValue={item?.content as string}
+                        onChangeAction={(value) => onChangeAction({ ...item, content: value })}
+                    ></TextInput>
                 </div>
             ) : null}
         </div>
