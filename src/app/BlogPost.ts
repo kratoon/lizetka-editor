@@ -13,7 +13,7 @@ export interface Meta {
     categories?: string[];
 }
 
-export type ContentItemType = 'h1' | 'h2' | 'h3' | 'h4' | 'comment' | 'paragraph' | 'image' | 'gallery' | 'youtube';
+export type ContentItemType = 'h1' | 'h2' | 'h3' | 'h4' | 'comment' | 'paragraph' | 'image' | 'gallery' | 'youtube' | 'file';
 
 export interface ContentItem {
     type: ContentItemType;
@@ -62,6 +62,8 @@ export function cleanBlogPost(blogPost: BlogPost, preserveIds: boolean = false) 
 export function isValidContentItem(item: Partial<ContentItem>): item is ContentItem {
     if (item?.type == null) {
         return false;
+    } else if (item.type === 'file') {
+        return isNotBlank(item.content) && (item.content as string).endsWith('.pdf');
     } else if (['h1', 'h2', 'h3', 'paragraph', 'comment', 'image', 'youtube'].includes(item.type)) {
         return isNotBlank(item.content);
     } else if (item.type === 'gallery') {
